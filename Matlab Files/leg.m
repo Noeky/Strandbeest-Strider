@@ -20,7 +20,7 @@ links_pairs = [
     7 8
 ];
 
-% 按用户指定顺序解析求解各点并绘制末端点 8 的轨迹
+% 解析求解各点
 pivot_idx = 1;
 driven_idx = 2;
 crank_len = link_lengths(1);
@@ -28,17 +28,11 @@ crank_len = link_lengths(1);
 theta_vec = linspace(0,2*pi,361);
 end_traj = zeros(length(theta_vec),2);
 
-% 用于连续性选择前一步解的变量
+% 存储前一步解的变量
 prev_pts = NaN(8,2);
 
 % 保存每一步的节点位置，用于动画
 nodes_history = zeros(length(theta_vec), 8, 2);
-
-% 如果枢轴未设置，给出默认位置(0,0)
-if any(isnan(nodes(pivot_idx,:)))
-    nodes(pivot_idx,:) = [0,0];
-    warning('Pivot node (node 1) was not set. Defaulting to [0,0].');
-end
 
 for ti = 1:length(theta_vec)
     theta = theta_vec(ti);
@@ -78,10 +72,10 @@ plot(end_traj(:,1), end_traj(:,2), '-b', 'LineWidth', 1.5);
 plot(nodes(4,1), nodes(4,2), 'ro');
 title('Trajectory of node 8'); xlabel('X'); ylabel('Y');
 
-% 生成并保存机构动图（GIF），以及在窗口中播放
+% 生成并保存机构动图，以及在窗口中播放
 giffile = fullfile(pwd,'leg_animation.gif');
 fig = figure('Name','Leg Animation','NumberTitle','off'); axis equal; grid on; hold on;
-pad = 10; % 用于视图边界扩展
+pad = 10; % 视图边界扩展
 
 % 计算绘图范围
 xlim([xmin xmax]); ylim([ymin ymax]);
