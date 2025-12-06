@@ -1,0 +1,12 @@
+{
+  "idx": 35004.0,
+  "link_lengths": [13.0, 49.0, 40.5, 55.8, 40.1, 40.3, 59.9, 36.7, 37.4, 49.0, 65.7],
+  "nodes(4,:)": [-40.0, -7.8],
+  "step_height": 6.48718,
+  "step_length": 56.9063,
+  "stable_pairs": 16.0,
+  "longest_streak": 51.3644,
+  "mean_y": -91.1472,
+  "std_y": 1.9916,
+  "step_height_plus_longest": 57.8516
+}
