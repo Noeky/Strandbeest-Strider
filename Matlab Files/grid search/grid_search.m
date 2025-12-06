@@ -10,7 +10,7 @@ p0 = p0(:)';
 % 要采样的参数索引 (1..13)。按灵敏度排名前 10：
 % 1) link_6  2) node4_x  3) link_7  4) link_1  5) link_3
 % 6) link_2  7) link_8  8) link_9  9) link_4  10) node4_y
-idxs = [6, 12, 7, 1, 3, 2];
+idxs = [6, 12, 7, 1, 3, 2, 8, 9];
 
 % offsets 和步长
 offsets = [-2 -1 0 1 2]; % 步长为 1
@@ -89,7 +89,7 @@ fprintf('Grid search complete: %d combinations processed. No .mat saved; CSV sav
 
 % --- 为每个指标分别选择并保存前 top_k 的结果 ---
 % 收集所有指标数据（列顺序与下面 metrics_names 对应）
-metrics_names = {'step_height','step_length','stable_pairs','longest_streak','mean_y','std_y'};
+metrics_names = {'step_height','step_length','stable_pairs','longest_streak','mean_y','std_y','step_height_plus_longest'};
 vals = nan(N, numel(metrics_names)); okv = false(N,1);
 for i = 1:N
     r = results(i);
@@ -100,6 +100,8 @@ for i = 1:N
     vals(i,4) = r.metrics.longest_streak;
     vals(i,5) = r.metrics.mean_y;
     vals(i,6) = r.metrics.std_y;
+    % 额外合成指标：步高 + longest_streak
+    vals(i,7) = vals(i,1) + vals(i,4);
 end
 
 valid_idx = find(okv);
@@ -119,7 +121,8 @@ else
             for j = 1:length(idxs)
                 fprintf(fid2, 'p%d,', idxs(j));
             end
-            fprintf(fid2, 'ok,step_height,step_length,stable_pairs,longest_streak,mean_y,std_y\n');
+            % 写入所有标准指标，并追加合成指标
+            fprintf(fid2, 'ok,step_height,step_length,stable_pairs,longest_streak,mean_y,std_y,step_height_plus_longest\n');
             for rnk = 1:length(ksel)
                 i = ksel(rnk);
                 rr = results(i);
@@ -127,7 +130,7 @@ else
                 for j = 1:length(idxs)
                     fprintf(fid2, '%.6g,', rr.params(j));
                 end
-                fprintf(fid2, '%d,%.6g,%.6g,%d,%.6g,%.6g,%.6g\n', rr.ok, rr.metrics.step_height, rr.metrics.step_length, rr.metrics.stable_pairs, rr.metrics.longest_streak, rr.metrics.mean_y, rr.metrics.std_y);
+                fprintf(fid2, '%d,%.6g,%.6g,%d,%.6g,%.6g,%.6g,%.6g\n', rr.ok, rr.metrics.step_height, rr.metrics.step_length, rr.metrics.stable_pairs, rr.metrics.longest_streak, rr.metrics.mean_y, rr.metrics.std_y, (rr.metrics.step_height + rr.metrics.longest_streak));
             end
             fclose(fid2);
             fprintf('Top %d results by %s saved to %s\n', min(top_k,numel(sel)), metrics_names{m}, topfn);
@@ -223,6 +226,15 @@ function [end_traj, ok] = simulate_leg(p, theta_vec)
         pts = circle_intersections(nodes(6,:), link10, nodes(7,:), link11);
         if isempty(pts), ok=false; break; end
         nodes(8,:) = choose_point(pts, prev_pts(8,:), 8);
+
+        % 检查：若脚端 node8 的高度超过 node6 或 node7，则判定该状态不可行
+        ny8 = nodes(8,2);
+        ny6 = nodes(6,2);
+        ny7 = nodes(7,2);
+        if (~isnan(ny6) && ny8 > ny6) || (~isnan(ny7) && ny8 > ny7)
+            ok = false;
+            break;
+        end
 
         prev_pts = nodes;
         end_traj(ti,:) = nodes(8,:);
