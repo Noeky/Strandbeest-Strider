@@ -1,0 +1,30 @@
+# Created by venv; see https://docs.python.org/3/library/venv.html
+### Python 核心 ###
+# 虚拟环境 (必须排除)
+.venv/
+venv/
+ENV/
+env/
+
+# Python 字节码（运行生成的缓存）
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 常见的打包与分发文件
+dist/
+build/
+*.egg-info/
+
+### 数据与分析 ###
+# *.csv
+*.xlsx
+
+# 日志文件
+*.log
+
+# VS Code 设置
+.vscode/
+
+*.bak
+*.tmp

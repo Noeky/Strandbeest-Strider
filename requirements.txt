@@ -1,0 +1,11 @@
+optuna
+
+numpy
+pandas
+scipy
+
+matplotlib
+plotly
+
+tqdm
+pysocks
