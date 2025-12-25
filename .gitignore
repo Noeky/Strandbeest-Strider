@@ -19,6 +19,8 @@ build/
 ### 数据与分析 ###
 # *.csv
 *.xlsx
+*.md
+tools/
 
 # 日志文件
 *.log
