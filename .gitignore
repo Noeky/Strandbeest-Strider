@@ -21,6 +21,8 @@ build/
 *.xlsx
 *.md
 tools/
+*.zip
+
 
 # 日志文件
 *.log
