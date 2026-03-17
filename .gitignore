@@ -19,7 +19,6 @@ build/
 ### 数据与分析 ###
 # *.csv
 *.xlsx
-*.md
 tools/
 *.zip
 
